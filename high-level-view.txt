@@ -23,6 +23,7 @@ Here is the high-level bird's-eye view of our sequential development plan. We wi
 ### Phase 4: Quiz Core & Evaluation Mechanics (`quiz` & `evaluation` modules)
 
 * **Step 7:** Building the Quiz State Management Engine.
+New Step 7: Define the "Argument Evaluation" Contract
 * **Step 8:** Engineering the Evaluation Rules Pipeline (Validating user text/logical selections against validation criteria).
 * **Step 9:** Implementing Inter-Module Events (Asynchronous event-driven communication between `quiz` and `evaluation` using Spring Modulith’s event publication registry).
 
