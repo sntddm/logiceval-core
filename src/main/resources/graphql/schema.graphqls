@@ -1,0 +1,16 @@
+type Query {
+    # Fetch all fallacies in the system
+    allFallacies: [Fallacy!]!
+    
+    # Retrieve a specific fallacy by its unique identifier
+    fallacyById(id: ID!): Fallacy
+}
+
+type Fallacy {
+    id: ID!
+    name: String!
+    latinName: String
+    description: String!
+    categoryName: String!
+    example: String
+}

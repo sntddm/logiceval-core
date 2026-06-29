@@ -1,3 +1,29 @@
 spring:
   application:
     name: logic-fallacies
+  datasource:
+    url: jdbc:h2:mem:fallacydb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+  mvc:
+    apiversion:
+      default: "1.0" # If a client doesn't specify a version, fallback to 1.0
+      supported: "1.0, 2.0" # Allowed API versions
+      detect-supported: true
+      use:
+        header: "X-API-Version" # Clients will send: X-API-Version: 1.0
+  graphql:
+    graphiql:
+      enabled: true
