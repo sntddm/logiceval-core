@@ -1,8 +1,11 @@
-package sa.logiceval.catalog;
+package sa.logiceval.catalog.internal;
 
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
+
+import sa.logiceval.catalog.FallacyDTO;
+import sa.logiceval.catalog.FallacyService;
 
 import java.util.List;
 import java.util.Optional;
