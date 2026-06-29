@@ -1,5 +1,6 @@
 package sa.logiceval.validator.internal;
 
-public class AnalysisRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
 
+interface AnalysisRepository extends JpaRepository<ArgumentAnalysis, Long> {
 }

@@ -15,11 +15,11 @@ public class DetectedFlaw {
     private Long id;
 
     @Column(nullable = false)
-    private String identifiedFallacyName; // Links back to our Catalog naming convention
+    private String identifiedFallacyName;
 
     @Column(nullable = false, length = 1000)
-    private String flawedSnippet; // The specific sentence inside the text that triggered the flaw
+    private String flawedSnippet;
 
     @Column(nullable = false, length = 2000)
-    private String aiJustification; // The rationalized explanation detailing why it fails logic checks
+    private String aiJustification;
 }

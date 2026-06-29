@@ -18,13 +18,12 @@ public class ArgumentAnalysis {
     private Long id;
 
     @Column(nullable = false, length = 4000)
-    private String rawInputText; // The text submitted by the user or an external AI agent
+    private String rawInputText;
 
     private LocalDateTime analyzedAt = LocalDateTime.now();
 
-    private boolean containsFallacies;
+    private boolean containsFlaws;
 
-    // A single text input might contain multiple structural reasoning flaws
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "analysis_id")
     private List<DetectedFlaw> detectedFlaws = new ArrayList<>();
