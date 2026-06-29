@@ -27,3 +27,12 @@ spring:
   graphql:
     graphiql:
       enabled: true
+  ai:
+    openai:
+      api-key: "ollama-local-dummy"
+      chat:
+        base-url: http://ollama-container:11434/v1 # Docker internal routing
+        model: llama3.2:3b
+      embedding:
+        base-url: http://ollama-container:11434/v1
+        model: nomic-embed-text:latest

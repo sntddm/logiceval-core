@@ -37,6 +37,51 @@ New Step 7: Define the "Argument Evaluation" Contract
 * **Step 12:** Securing API & GraphQL pathways using Spring Security with OAuth2/JWT tokens.
 * **Step 13:** Verification via Spring Modulith Verification (Writing tests to verify that architectural boundaries are never violated).
 
+-----------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------
+Using **RAG (Retrieval-Augmented Generation)** here is actually an exceptional engineering choice!
+
+Instead of stuffing all 50+ or 100+ logical fallacies into a massive LLM context window every single time—which increases latency, blows up your token costs, and leads to "needle-in-a-haystack" confusion for the model—we can use RAG. When a user submits an argument, we can perform a quick semantic vector search against our `catalog` to pull only the top 3–5 most *logically relevant* fallacies and inject only those definitions into the AI prompt. This keeps your validation pipeline fast, accurate, and cheap.
+
 ---
 
-Whenever you are ready, let me know, and we will jump straight into **Step 1: Initial Workspace Setup** to configure our `build.gradle` and structural requirements! Which step or phase would you like to deep dive into first?
+## 🗺️ Refactored Project Roadmap (Argument Validation Pipeline)
+
+Here is your updated step-by-step master plan, completely rebuilt for our automated AI Validation Tool with RAG enhancement.
+
+### Phase 1: Project Initiation & Modulith Architecture
+
+* **Step 1:** Initial Workspace Setup (Gradle, Java 26, Spring Boot 4, H2 configuration, and Spring AI/Vector database dependencies).
+* **Step 2:** Structural Modulith Architecture Setup (Defining strict boundaries for `catalog`, `validator`, and `security`).
+
+### Phase 2: Domain Modeling, Rules, & Data Seeding (`catalog` module)
+
+* **Step 3:** Designing the Hierarchical Database Schema using JPA/Hibernate for categories and definitions.
+* **Step 4:** Implementing the Fallacy Catalog Persistence Layer, Repositories, and the `DataInitializer` matrix seeder.
+
+### Phase 3: RAG Framework & Vector Embeddings (`catalog` module)
+
+* **Step 5:** **[NEW]** Configuring the Vector Database (e.g., Pgvector/H2-compatible stores) inside the system.
+* **Step 6:** **[NEW]** Implementing Vector Embeddings generation for our 17+ seeded fallback textbook examples.
+
+### Phase 4: AI Ingestion & RAG Validation Pipeline (`validator` module)
+
+* **Step 7:** **[NEW]** Creating the RAG Retrieval Engine (Similarity matching the incoming text against the vector store).
+* **Step 8:** Engineering the Spring AI Structured Output Parser (Mapping raw LLM logic validation into strict JSON schemas).
+* **Step 9:** Building the Core `ArgumentValidatorService` state storage and audit logging backend.
+
+### Phase 5: The Edge & API Layer
+
+* **Step 10:** Developing Native Versioned REST Controllers (`1.0` for single validation, `2.0` for batch background evaluation).
+* **Step 11:** Constructing the GraphQL Schema & Resolvers for fetching historical argument audit structures.
+
+### Phase 6: Enterprise Security & Verification
+
+* **Step 12:** Securing the submission routes using Spring Security, OAuth2, and JWT rate limiting.
+* **Step 13:** Structural Modulith Verification testing to guarantee module boundaries remain completely isolated.
+
+---
+
+Since we already completed Phase 2 (Steps 3 and 4) earlier by modeling and seeding our catalog, our next natural progression is **Phase 3: Step 5 (Configuring the Vector Database and RAG framework)**.
+
+Shall we dive into setting up the vector store configuration so our catalog can be indexed for AI retrieval?

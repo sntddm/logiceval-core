@@ -1,4 +1,4 @@
-package sa.logiceval.validator.internal;
+package sa.logiceval.validator;
 
 public class ArgumentValidatorService {
 
