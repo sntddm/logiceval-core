@@ -62,11 +62,11 @@ Here is your updated step-by-step master plan, completely rebuilt for our automa
 ### Phase 3: RAG Framework & Vector Embeddings (`catalog` module)
 
 * **Step 5:** **[NEW]** Configuring the Vector Database (e.g., Pgvector/H2-compatible stores) inside the system.
-* **Step 6:** **[NEW]** Implementing Vector Embeddings generation for our 17+ seeded fallback textbook examples.
+* **Step 6:** *Implementing Vector Embeddings generation for our 22 seeded fallback textbook examples.
 
 ### Phase 4: AI Ingestion & RAG Validation Pipeline (`validator` module)
 
-* **Step 7:** **[NEW]** Creating the RAG Retrieval Engine (Similarity matching the incoming text against the vector store).
+* **Step 7:** Creating the RAG Retrieval Engine (Similarity matching the incoming text against the vector store).
 * **Step 8:** Engineering the Spring AI Structured Output Parser (Mapping raw LLM logic validation into strict JSON schemas).
 * **Step 9:** Building the Core `ArgumentValidatorService` state storage and audit logging backend.
 
