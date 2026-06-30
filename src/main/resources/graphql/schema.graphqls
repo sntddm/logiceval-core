@@ -4,6 +4,12 @@ type Query {
     
     # Retrieve a specific fallacy by its unique identifier
     fallacyById(id: ID!): Fallacy
+
+    # Retrieve the historical audit trail of all verified arguments
+    argumentAnalysisHistory: [ArgumentAnalysisAudit!]!
+    
+    # Lookup a specific past analysis by its database identifier
+    analysisById(id: ID!): ArgumentAnalysisAudit
 }
 
 type Fallacy {
@@ -13,4 +19,19 @@ type Fallacy {
     description: String!
     categoryName: String!
     example: String
+}
+
+type ArgumentAnalysisAudit {
+    id: ID!
+    rawInputText: String!
+    analyzedAt: String!
+    containsFlaws: Boolean!
+    detectedFlaws: [DetectedFlawDetail!]!
+}
+
+type DetectedFlawDetail {
+    id: ID!
+    identifiedFallacyName: String!
+    flawedSnippet: String!
+    aiJustification: String!
 }
