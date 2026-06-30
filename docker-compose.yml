@@ -1,0 +1,46 @@
+services:
+    postgres-vector:
+        image: pgvector/pgvector:0.8.2-pg18-trixie
+        pull_policy: never
+        container_name: logiceval-db-container
+        environment:
+            POSTGRES_DB: logiceval_db
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+        ports:
+            - "5432:5432"
+        # volumes:
+        #     - pgdata:/var/lib/postgresql/data
+        # healthcheck:
+        #     test: ["CMD-SHELL", "pg_isready -U postgres -d logiceval_db"]
+        #     interval: 5s
+        #     timeout: 5s
+        #     retries: 5
+        # restart: unless-stopped
+    # ollama:
+    #     image: ollama/ollama:latest
+    #     pull_policy: never
+    #     container_name: logiceval-ollama-container
+    #     ports:
+    #         - "11434:11434"
+    #     volumes:
+    #         - ollama_storage:/root/.ollama
+    #     # If you have an NVIDIA GPU, uncomment the lines below to enable hardware acceleration:
+    #     deploy:
+    #         resources:
+    #             reservations:
+    #                 devices:
+    #                     - driver: nvidia
+    #                       count: all
+    #                       capabilities: [gpu]
+    #     restart: unless-stopped
+
+# volumes:
+#     pgdata:
+#         driver: local
+#     ollama_storage:
+#         driver: local
+
+# volumes:
+#     pgdata:
+#         driver: local
