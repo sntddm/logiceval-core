@@ -26,9 +26,12 @@ public class FallacyAiClient {
                 {ragContext}
 
                 Rules:
-                1. If a flaw matches one of the provided reference fallacies, extract it.
-                2. Exact matching string values are required for 'identifiedFallacyName' fields.
-                3. Provide clear analytical justifications.
+                1. ALWAYS include the 'containsFlaws' field as true or false. Never omit it.
+                2. If a fallacy name is identified, you MUST copy its corresponding 'Core Flaw' description
+                   directly from the reference context and use it as part of your 'aiJustification'. Do not mix definitions.
+                2. If a flaw matches one of the provided reference fallacies, extract it.
+                3. Exact matching string values are required for 'identifiedFallacyName' fields.
+                4. Provide clear analytical justifications.
                 """;
 
         return this.chatClient.prompt()

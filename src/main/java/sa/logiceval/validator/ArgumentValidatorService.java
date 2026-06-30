@@ -38,7 +38,8 @@ public class ArgumentValidatorService {
         // entity structure
         ArgumentAnalysis analysis = new ArgumentAnalysis();
         analysis.setRawInputText(rawInputText);
-        analysis.setContainsFlaws(aiResult.containsFlaws());
+        // analysis.setContainsFlaws(aiResult.containsFlaws());
+        analysis.setContainsFlaws(Boolean.TRUE.equals(aiResult.containsFlaws()));
 
         if (aiResult.flaws() != null) {
             List<DetectedFlaw> internalFlaws = aiResult.flaws().stream()
