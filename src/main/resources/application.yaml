@@ -1,6 +1,10 @@
 spring:
   application:
     name: logic-fallacies
+  # h2:
+  #   console:
+  #     enabled: true
+  #     path: /h2-console
   datasource:
     # h2:
     # url: jdbc:h2:mem:fallacydb;DB_CLOSE_DELAY=-1
@@ -12,10 +16,6 @@ spring:
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
   jpa:
     # h2
     # database-platform: org.hibernate.dialect.H2Dialect
@@ -26,11 +26,16 @@ spring:
     #   hibernate.format_sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update # Auto-creates relational tables on startup
+      # ddl-auto: update # Auto-creates relational tables on startup
+      ddl-auto: validate # Strict mode: Hibernate only verifies the schema matches our entities
     properties:
       hibernate:
         jdbc:
           batch_size: 20 # Optimizes batch inserting embeddings
+  flyway:
+    enabled: true
+    baseline-on-migrate: true # Initializes Flyway on existing databases if needed
+    locations: classpath:db/migration
   mvc:
     apiversion:
       default: "1.0" # If a client doesn't specify a version, fallback to 1.0
@@ -47,8 +52,10 @@ spring:
       chat:
         # base-url: http://ollama-container:11434/v1 # Docker internal routing
         base-url: http://localhost:11434/v1 # Docker internal routing
+        # model: llama3.2:3b
+        # num_ctx: 2048 # must be used with llama 3b to be used with gpu!!!
         model: llama3.2:1b
-        # num_ctx: 2048
+
       embedding:
         # base-url: http://ollama-container:11434/v1
         base-url: http://localhost:11434/v1
@@ -56,7 +63,7 @@ spring:
     vectorstore:
       pgvector:
         database-name: "logiceval_db"
-        initialize-schema: true
+        # initialize-schema: true
         table-name: "fallacy_vector_store" # Table where Spring AI stores embeddings
         index-type: HNSW # High-performance semantic search index
         # dimensions: 1536 # Standard dimension count for OpenAI text-embedding-3-small
