@@ -10,12 +10,13 @@ import java.util.List;
 public class ArgumentValidatorService {
 
     private final FallacyRagRetriever ragRetriever;
-    private final FallacyAiClient aiClient;
+    // private final FallacyAiClient_openai aiClient;
+    private final FallacyAiClient_ollama aiClient;
     private final AnalysisRepository analysisRepository;
 
     // Package-private constructor for Modulith optimization
     ArgumentValidatorService(FallacyRagRetriever ragRetriever,
-            FallacyAiClient aiClient,
+            FallacyAiClient_ollama aiClient,
             AnalysisRepository analysisRepository) {
         this.ragRetriever = ragRetriever;
         this.aiClient = aiClient;

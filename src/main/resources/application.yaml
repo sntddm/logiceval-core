@@ -47,7 +47,8 @@ spring:
     graphiql:
       enabled: true
   ai:
-    openai:
+    # openai:
+    ollama:
       api-key: "ollama-local-dummy"
       chat:
         # base-url: http://ollama-container:11434/v1 # Docker internal routing
@@ -55,6 +56,8 @@ spring:
         # model: llama3.2:3b
         # num_ctx: 2048 # must be used with llama 3b to be used with gpu!!!
         model: llama3.2:1b
+        temperature: 0.0 # Low temperature prevents creative delays
+        num_predict: 300 # Caps response length to guarantee low latency
 
       embedding:
         # base-url: http://ollama-container:11434/v1
@@ -68,3 +71,11 @@ spring:
         index-type: HNSW # High-performance semantic search index
         # dimensions: 1536 # Standard dimension count for OpenAI text-embedding-3-small
         dimensions: 768
+springdoc:
+  api-docs:
+    path: /v3/api-docs # Raw JSON OpenAPI definition path
+  swagger-ui:
+    path: /swagger-ui.html # Browser UI endpoint path
+    operations-sorter: alpha # Sorts endpoints alphabetically
+    tags-sorter: alpha
+  paths-to-match: /api/** # Only index our actual business API surface

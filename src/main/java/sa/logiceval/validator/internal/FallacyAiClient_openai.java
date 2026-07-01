@@ -3,13 +3,13 @@ package sa.logiceval.validator.internal;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Component;
 
-@Component
-public class FallacyAiClient {
+// @Component
+public class FallacyAiClient_openai {
 
     private final ChatClient chatClient;
 
     // We build the client using a pre-configured ChatClient.Builder
-    FallacyAiClient(ChatClient.Builder chatClientBuilder) {
+    FallacyAiClient_openai(ChatClient.Builder chatClientBuilder) {
         this.chatClient = chatClientBuilder.build();
     }
 
