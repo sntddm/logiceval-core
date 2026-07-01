@@ -3,11 +3,11 @@ package sa.logiceval.catalog.internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.document.Document;
-// import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.VectorStore;
 // import org.springframework.ai.vectorstore.Document;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.jdbc.core.JdbcTemplate; // <-- New Import
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,19 +22,31 @@ class DataInitializer implements ApplicationRunner {
 
     private final FallacyDefinitionRepository definitionRepository;
     private final VectorStore vectorStore;
+    private final JdbcTemplate jdbcTemplate; // <-- Inject JdbcTemplate
 
-    // Direct injection of Spring AI's auto-configured PgVectorStore abstraction
-    DataInitializer(FallacyDefinitionRepository definitionRepository, VectorStore vectorStore) {
+    DataInitializer(FallacyDefinitionRepository definitionRepository, VectorStore vectorStore,
+            JdbcTemplate jdbcTemplate) {
         this.definitionRepository = definitionRepository;
         this.vectorStore = vectorStore;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     @Transactional
     public void run(ApplicationArguments args) throws Exception {
-        log.info("Checking relational database catalog for fallacies to index...");
+        log.info("Checking vector store indexing state...");
 
-        // 1. Fetch the definitions pre-seeded by Flyway V2
+        // GUARD CONDITION: Check if public.fallacy_vector_store already holds records
+        Integer existingVectorCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM public.fallacy_vector_store", Integer.class);
+
+        if (existingVectorCount != null && existingVectorCount > 0) {
+            log.info("Vector store already contains {} indexed records. Skipping embedding generation step.",
+                    existingVectorCount);
+            return; // Clean fast exit!
+        }
+
+        log.info("Vector store is empty. Fetching relational catalog for seeding pipeline...");
         List<FallacyDefinition> fallacies = definitionRepository.findAll();
 
         if (fallacies.isEmpty()) {
@@ -42,32 +54,21 @@ class DataInitializer implements ApplicationRunner {
             return;
         }
 
-        log.info("Found {} fallacies. Transforming into Spring AI documents...", fallacies.size());
-
-        // 2. Map Fallacy JPA Entities into Spring AI Document structures
+        log.info("Transforming {} fallacies into vectors...", fallacies.size());
         List<Document> documentsToVectorize = fallacies.stream()
                 .map(this::toSpringAiDocument)
                 .collect(Collectors.toList());
 
-        // 3. Pushing to PgVectorStore (This automatically invokes Ollama to compute
-        // embeddings)
         try {
-            log.info("Sending batch to Ollama for embedding generation and pgvector injection...");
+            log.info("Invoking nomic-embed-text via Ollama for initial indexing batch...");
             vectorStore.add(documentsToVectorize);
-            log.info("Successfully indexed {} logical fallacies into the vector store pipeline!",
-                    documentsToVectorize.size());
+            log.info("Successfully indexed vector targets!");
         } catch (Exception e) {
-            log.error("CRITICAL: Failed to push embeddings into vector store. Error: {}", e.getMessage(), e);
+            log.error("Failed to seed vector store: {}", e.getMessage(), e);
         }
     }
 
-    /**
-     * Converts a domain database entity into a high-utility semantic text block
-     * accompanied by isolated filtering metadata payload properties.
-     */
     private Document toSpringAiDocument(FallacyDefinition fallacy) {
-        // Construct a clean, highly descriptive text anchor for the embedding model to
-        // read
         String semanticContent = String.format(
                 "Fallacy Name: %s\nLatin Name: %s\nLogical Flaw Description: %s\nTextbook Example: %s",
                 fallacy.getName(),
@@ -75,16 +76,11 @@ class DataInitializer implements ApplicationRunner {
                 fallacy.getLogicalFlawDescription(),
                 fallacy.getTextbookExample());
 
-        // Store explicit categorical dimensions as structured metadata for exact-match
-        // runtime filtering expressions
         Map<String, Object> metadata = Map.of(
                 "fallacy_id", fallacy.getId(),
                 "fallacy_name", fallacy.getName(),
-                "category_id", fallacy.getCategory().getId(),
                 "category_name", fallacy.getCategory().getName());
 
-        // Spring AI Document holds the semantic payload text and meta identifiers
-        // together
         return new Document(semanticContent, metadata);
     }
 }

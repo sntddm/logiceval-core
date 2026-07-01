@@ -35,9 +35,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-flyway'  
 	implementation 'org.flywaydb:flyway-database-postgresql'
 	
-	implementation 'org.springframework.ai:spring-ai-starter-model-openai'	
+	// implementation 'org.springframework.ai:spring-ai-starter-model-openai'	
+	implementation 'org.springframework.ai:spring-ai-starter-model-ollama'
 	implementation 'org.springframework.ai:spring-ai-vector-store-advisor'
 	implementation 'org.springframework.ai:spring-ai-starter-vector-store-pgvector'
+
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
 
 	compileOnly 'org.projectlombok:lombok'
 	// runtimeOnly 'com.h2database:h2'
