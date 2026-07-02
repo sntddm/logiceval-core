@@ -71,6 +71,14 @@ spring:
         index-type: HNSW # High-performance semantic search index
         # dimensions: 1536 # Standard dimension count for OpenAI text-embedding-3-small
         dimensions: 768
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Points the resource server framework to our public key for automated validation
+          public-key-location: classpath:app-public.pem
+          # Points our internal token issuer logic to the private key for signing
+          private-key-location: classpath:app-private.pem
 springdoc:
   api-docs:
     path: /v3/api-docs # Raw JSON OpenAPI definition path
