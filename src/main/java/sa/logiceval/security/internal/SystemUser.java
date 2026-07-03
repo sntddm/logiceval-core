@@ -1,4 +1,4 @@
-package sa.logiceval.security;
+package sa.logiceval.security.internal;
 
 import jakarta.persistence.*;
 import java.util.Set;

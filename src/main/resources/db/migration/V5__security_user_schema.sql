@@ -14,22 +14,45 @@ CREATE TABLE IF NOT EXISTS user_roles (
     CONSTRAINT fk_user_roles_user FOREIGN KEY (user_id) REFERENCES system_users (id) ON DELETE CASCADE
 );
 
--- 3. Seed an initial admin and test account (Password is 'password123' hashed with BCrypt)
+-- 3. Seed an initial admin and test account (Notice: NO hardcoded IDs)
 INSERT INTO
-    system_users (id, username, password_hash)
+    system_users (username, password_hash)
 VALUES (
-        1,
         'admin',
-        '$2a$10$dXJ3SWp0BBvX8b3T10bTFe3S7gB2O6IeVvbywWhD1Lbe3N4K2r6/G'
+        '$2a$10$8bjMFaTfi3/GQ5c56hkWsuytHMQdgg2kknivy7dOMfl/.W62723UG'
     ),
     (
-        2,
         'user',
-        '$2a$10$dXJ3SWp0BBvX8b3T10bTFe3S7gB2O6IeVvbywWhD1Lbe3N4K2r6/G'
+        '$2a$10$8bjMFaTfi3/GQ5c56hkWsuytHMQdgg2kknivy7dOMfl/.W62723UG'
     );
 
+-- 4. Map roles by querying the newly generated IDs dynamically
 INSERT INTO
     user_roles (user_id, role_name)
-VALUES (1, 'ROLE_ADMIN'),
-    (1, 'ROLE_USER'),
-    (2, 'ROLE_USER');
+VALUES (
+        (
+            SELECT id
+            FROM system_users
+            WHERE
+                username = 'admin'
+        ),
+        'ROLE_ADMIN'
+    ),
+    (
+        (
+            SELECT id
+            FROM system_users
+            WHERE
+                username = 'admin'
+        ),
+        'ROLE_USER'
+    ),
+    (
+        (
+            SELECT id
+            FROM system_users
+            WHERE
+                username = 'user'
+        ),
+        'ROLE_USER'
+    );

@@ -1,6 +1,7 @@
 package sa.logiceval.validator;
 
 import sa.logiceval.validator.internal.*;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,13 +11,12 @@ import java.util.List;
 public class ArgumentValidatorService {
 
     private final FallacyRagRetriever ragRetriever;
-    // private final FallacyAiClient_openai aiClient;
-    private final FallacyAiClient_ollama aiClient;
+    private final FallacyAiClient aiClient;
     private final AnalysisRepository analysisRepository;
 
     // Package-private constructor for Modulith optimization
     ArgumentValidatorService(FallacyRagRetriever ragRetriever,
-            FallacyAiClient_ollama aiClient,
+            FallacyAiClient aiClient,
             AnalysisRepository analysisRepository) {
         this.ragRetriever = ragRetriever;
         this.aiClient = aiClient;
@@ -39,11 +39,10 @@ public class ArgumentValidatorService {
         // entity structure
         ArgumentAnalysis analysis = new ArgumentAnalysis();
         analysis.setRawInputText(rawInputText);
-        // analysis.setContainsFlaws(aiResult.containsFlaws());
-        analysis.setContainsFlaws(Boolean.TRUE.equals(aiResult.containsFlaws()));
 
         if (aiResult.flaws() != null) {
             List<DetectedFlaw> internalFlaws = aiResult.flaws().stream()
+                    .filter(aiFlaw -> aiFlaw != null && aiFlaw.identifiedFallacyName() != null)
                     .map(aiFlaw -> {
                         DetectedFlaw flaw = new DetectedFlaw();
                         flaw.setIdentifiedFallacyName(aiFlaw.identifiedFallacyName());
@@ -53,6 +52,9 @@ public class ArgumentValidatorService {
                     }).toList();
             analysis.getDetectedFlaws().addAll(internalFlaws);
         }
+
+        boolean trulyHasFlaws = Boolean.TRUE.equals(aiResult.containsFlaws()) && !analysis.getDetectedFlaws().isEmpty();
+        analysis.setContainsFlaws(trulyHasFlaws);
 
         ArgumentAnalysis savedAnalysis = analysisRepository.save(analysis);
 
