@@ -1,10 +1,11 @@
-package sa.logiceval.validator;
+package sa.logiceval.validator.internal;
 
-import sa.logiceval.validator.internal.AnalysisRepository;
-import sa.logiceval.validator.internal.ArgumentAnalysis;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
+
+import sa.logiceval.validator.EvaluationResultDTO;
+import sa.logiceval.validator.EvaluationResultDTO.FlawDetail;
 
 import java.util.List;
 import java.util.Optional;

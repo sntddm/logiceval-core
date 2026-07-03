@@ -1,6 +1,6 @@
--- ==========================================
--- 1. SEED HIERARCHICAL CATEGORIES
--- ==========================================
+-- ============================================================================
+-- 1. SEED HIERARCHICAL CATEGORIES (UPSERT BY ID)
+-- ============================================================================
 
 -- Stage 1: Insert Core Root Categories (No Parents)
 INSERT INTO
@@ -22,7 +22,12 @@ VALUES (
         'Formal Fallacies',
         'Arguments with a flawed logical structure or form, rendering them completely invalid regardless of content.'
     )
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO
+UPDATE
+SET
+    name = EXCLUDED.name,
+    description = EXCLUDED.description,
+    parent_id = EXCLUDED.parent_id;
 
 -- Stage 2: Insert Layered Sub-Categories (Referencing Core Roots)
 INSERT INTO
@@ -68,13 +73,18 @@ VALUES (
         'Syllogistic Fallacies',
         'Flaws in structural categorical arguments using quantifiers.'
     )
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO
+UPDATE
+SET
+    name = EXCLUDED.name,
+    description = EXCLUDED.description,
+    parent_id = EXCLUDED.parent_id;
 
--- ==========================================
--- 2. SEED CONCRETE FALLACY DEFINITIONS
--- ==========================================
+-- ============================================================================
+-- 2. SEED CONCRETE FALLACY DEFINITIONS (UPSERT BY UNIQUE NAME)
+-- ============================================================================
+-- Assumes a UNIQUE constraint exists on 'name' in your fallacy_definitions schema
 
--- Change 'alias_name' to 'latin_name' in the insert target signature
 INSERT INTO
     fallacy_definitions (
         category_id,
@@ -193,7 +203,7 @@ VALUES
     'Weak Analogy',
     NULL,
     'Comparing two things that share minor similarities but are fundamentally different.',
-    'Guns are made of metal and can kill people, and cars are also made of metal and kill people in accidents. If we regulate guns, we should require a license to look at cars.'
+    'Guns are made of metal and can kill people, and cars are also made of metal and kill people in accidents. If we require a license to drive a car, we should require a license to look at cars.'
 ),
 
 -- --- D. Fallacies of Ambiguity (Category 6) ---
@@ -250,11 +260,17 @@ VALUES
     'Structure: All X are Y. Z is a Y. Therefore, Z is an X.',
     'All dogs are mammals. A whale is a mammal. Therefore, a whale is a dog.'
 )
-ON CONFLICT (name) DO NOTHING;
+ON CONFLICT (name) DO
+UPDATE
+SET
+    category_id = EXCLUDED.category_id,
+    latin_name = EXCLUDED.latin_name,
+    logical_flaw_description = EXCLUDED.logical_flaw_description,
+    textbook_example = EXCLUDED.textbook_example;
 
--- ==========================================
+-- ============================================================================
 -- 3. ALIGN PRIMARY KEY SEQUENCES
--- ==========================================
+-- ============================================================================
 SELECT setval(
         'fallacy_categories_id_seq', (
             SELECT MAX(id)

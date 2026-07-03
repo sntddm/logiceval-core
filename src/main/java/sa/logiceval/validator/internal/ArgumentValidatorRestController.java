@@ -1,7 +1,12 @@
-package sa.logiceval.validator;
+package sa.logiceval.validator.internal;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import sa.logiceval.validator.ArgumentValidatorService;
+import sa.logiceval.validator.EvaluationResultDTO;
 
 @RestController
 @RequestMapping("/api/validate")
@@ -29,10 +34,16 @@ class ArgumentValidatorRestController {
      */
     @PostMapping(version = "2.0", consumes = "application/json")
     public ResponseEntity<EvaluationResultDTO> validateArgumentV2(@RequestBody ValidationRequestV2 request) {
-        // We leverage the exact same core engine, while capturing extended request
-        // parameters
-        // e.g., mapping request.argumentText() out of the structured object
+        // Leverages the exact same core engine, mapping the target property out of the
+        // request payload
         EvaluationResultDTO result = validatorService.validateArgument(request.argumentText());
         return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Private request body representation sealed to this controller's version
+     * contract.
+     */
+    private record ValidationRequestV2(String argumentText) {
     }
 }
