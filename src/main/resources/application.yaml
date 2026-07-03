@@ -1,89 +1,69 @@
 spring:
   application:
     name: logic-fallacies
-  # h2:
-  #   console:
-  #     enabled: true
-  #     path: /h2-console
+
   datasource:
-    # h2:
-    # url: jdbc:h2:mem:fallacydb;DB_CLOSE_DELAY=-1
-    # driver-class-name: org.h2.Driver
-    # username: sa
-    # password: ""
-    # postgresql:
-    url: jdbc:postgresql://localhost:5432/logiceval_db
-    username: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/logiceval_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
+
   jpa:
-    # h2
-    # database-platform: org.hibernate.dialect.H2Dialect
-    # hibernate:
-    #   ddl-auto: update
-    # show-sql: true
-    # properties:
-    #   hibernate.format_sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      # ddl-auto: update # Auto-creates relational tables on startup
-      ddl-auto: validate # Strict mode: Hibernate only verifies the schema matches our entities
+      ddl-auto: validate # Strict verification mode against migration tracking
     properties:
       hibernate:
         jdbc:
-          batch_size: 20 # Optimizes batch inserting embeddings
+          batch_size: 20 # Optimizes multi-row vector payload inserts
+
   flyway:
     enabled: true
-    baseline-on-migrate: true # Initializes Flyway on existing databases if needed
+    baseline-on-migrate: true
     locations: classpath:db/migration
+
   mvc:
     apiversion:
-      default: "1.0" # If a client doesn't specify a version, fallback to 1.0
-      supported: "1.0, 2.0" # Allowed API versions
+      default: "1.0"
+      supported: "1.0, 2.0"
       detect-supported: true
       use:
-        header: "X-API-Version" # Clients will send: X-API-Version: 1.0
+        header: "X-API-Version"
+
   graphql:
     graphiql:
       enabled: true
+
   ai:
-    # openai:
     ollama:
       api-key: "ollama-local-dummy"
       chat:
-        # base-url: http://ollama-container:11434/v1 # Docker internal routing
-        base-url: http://localhost:11434/v1 # Docker internal routing
-        # model: llama3.2:3b
-        # num_ctx: 2048 # must be used with llama 3b to be used with gpu!!!
+        base-url: ${OLLAMA_CHAT_BASE_URL:http://localhost:11434/v1}
         model: llama3.2:1b
-        temperature: 0.0 # Low temperature prevents creative delays
-        num_predict: 300 # Caps response length to guarantee low latency
-
+        temperature: 0.0 # Low variance prevents deterministic creative delays
+        num_predict: 300 # Bounds response window sizes for consistent low latency
       embedding:
-        # base-url: http://ollama-container:11434/v1
-        base-url: http://localhost:11434/v1
+        base-url: ${OLLAMA_EMBEDDING_BASE_URL:http://localhost:11434/v1}
         model: nomic-embed-text:latest
     vectorstore:
       pgvector:
         database-name: "logiceval_db"
-        # initialize-schema: true
-        table-name: "fallacy_vector_store" # Table where Spring AI stores embeddings
-        index-type: HNSW # High-performance semantic search index
-        # dimensions: 1536 # Standard dimension count for OpenAI text-embedding-3-small
-        dimensions: 768
+        table-name: "fallacy_vector_store"
+        index-type: HNSW # High-performance proximity search matching
+        dimensions: 768 # Target footprint dimension for nomic-embed-text
+
   security:
     oauth2:
       resourceserver:
         jwt:
-          # Points the resource server framework to our public key for automated validation
-          public-key-location: classpath:app-public.pem
-          # Points our internal token issuer logic to the private key for signing
-          private-key-location: classpath:app-private.pem
+          public-key-location: classpath:app-public.pem # Self-contained verification signature
+          private-key-location: classpath:app-private.pem # Internal authorization signing link
+
 springdoc:
   api-docs:
-    path: /v3/api-docs # Raw JSON OpenAPI definition path
+    path: /v3/api-docs
   swagger-ui:
-    path: /swagger-ui.html # Browser UI endpoint path
-    operations-sorter: alpha # Sorts endpoints alphabetically
+    path: /swagger-ui.html
+    operations-sorter: alpha
     tags-sorter: alpha
-  paths-to-match: /api/** # Only index our actual business API surface
+  paths-to-match: /api/**

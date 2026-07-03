@@ -1,0 +1,21 @@
+spring:
+    profiles:
+        active: test
+
+    datasource:
+        # Use an in-memory database or local Testcontainers instance for isolated runs
+        url: jdbc:h2:mem:logiceval_test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+        driver-class-name: org.h2.Driver
+
+    ai:
+        openai:
+            # Prevents Spring AI from crashing on context boot due to a missing api-key
+            api-key: mock-key-for-local-testing-sandbox
+            chat:
+                options:
+                    model: gpt-4o
+
+# Disable external production rate-limiting during high-speed unit tests
+security:
+    rate-limiting:
+        enabled: false

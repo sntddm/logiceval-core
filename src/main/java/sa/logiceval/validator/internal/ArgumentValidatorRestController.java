@@ -10,7 +10,7 @@ import sa.logiceval.validator.EvaluationResultDTO;
 
 @RestController
 @RequestMapping("/api/validate")
-class ArgumentValidatorRestController {
+public class ArgumentValidatorRestController {
 
     private final ArgumentValidatorService validatorService;
 
@@ -28,6 +28,7 @@ class ArgumentValidatorRestController {
         return ResponseEntity.ok(result);
     }
 
+    // TODO
     /**
      * API Version 2.0 - Rich Parameterized Payload Validation
      * Expects a JSON object in the Request Body.

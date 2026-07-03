@@ -1,5 +1,7 @@
 package sa.logiceval.security.internal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,7 @@ import java.util.Set;
 @Service
 public class AuthService {
 
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
     private final SystemUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;

@@ -2,9 +2,11 @@ package sa.logiceval.validator;
 
 import sa.logiceval.validator.internal.*;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -13,19 +15,22 @@ public class ArgumentValidatorService {
     private final FallacyRagRetriever ragRetriever;
     private final FallacyAiClient aiClient;
     private final AnalysisRepository analysisRepository;
+    private final ApplicationEventPublisher eventPublisher; // 1. Added publisher field
 
-    // Package-private constructor for Modulith optimization
+    // Package-private constructor optimized for Modulith dependency injection
     ArgumentValidatorService(FallacyRagRetriever ragRetriever,
             FallacyAiClient aiClient,
-            AnalysisRepository analysisRepository) {
+            AnalysisRepository analysisRepository,
+            ApplicationEventPublisher eventPublisher) { // 2. Wire up the bean
         this.ragRetriever = ragRetriever;
         this.aiClient = aiClient;
         this.analysisRepository = analysisRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     /**
-     * Executes the complete RAG-to-AI analysis pipeline and persists the
-     * transaction.
+     * Executes the complete RAG-to-AI analysis pipeline, persists the
+     * transaction, and broadcasts a domain event upon completion.
      */
     @Transactional
     public EvaluationResultDTO validateArgument(String rawInputText) {
@@ -58,7 +63,14 @@ public class ArgumentValidatorService {
 
         ArgumentAnalysis savedAnalysis = analysisRepository.save(analysis);
 
-        // 4. Return DTO: Map database entity state to clean public output payload
+        // 4. Event Publication: Broadcast completion to listening modules
+        // asynchronously
+        eventPublisher.publishEvent(new ArgumentValidatedEvent(
+                savedAnalysis.getId(),
+                savedAnalysis.isContainsFlaws(),
+                LocalDateTime.now()));
+
+        // 5. Return DTO: Map database entity state to clean public output payload
         return mapToDTO(savedAnalysis);
     }
 

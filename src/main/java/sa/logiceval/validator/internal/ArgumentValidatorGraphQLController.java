@@ -2,16 +2,16 @@ package sa.logiceval.validator.internal;
 
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 
 import sa.logiceval.validator.EvaluationResultDTO;
-import sa.logiceval.validator.EvaluationResultDTO.FlawDetail;
 
 import java.util.List;
 import java.util.Optional;
 
 @Controller
-class ArgumentValidatorGraphQLController {
+public class ArgumentValidatorGraphQLController {
 
     private final AnalysisRepository analysisRepository;
 
@@ -45,5 +45,11 @@ class ArgumentValidatorGraphQLController {
                 entity.getAnalyzedAt(),
                 entity.isContainsFlaws(),
                 flaws);
+    }
+
+    // Add this inside your ArgumentValidatorGraphQLController.java
+    @SchemaMapping(typeName = "ArgumentAnalysisAudit", field = "id")
+    public Long getId(EvaluationResultDTO dto) {
+        return dto.analysisId();
     }
 }

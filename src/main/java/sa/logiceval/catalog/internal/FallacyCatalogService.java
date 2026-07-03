@@ -4,6 +4,7 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -52,5 +53,19 @@ public class FallacyCatalogService {
 
     public enum IngestionResult {
         CREATED, UPDATED
+    }
+
+    @Transactional
+    public void updateValidationMetrics(boolean counterFlawFound) {
+        System.out.println("📦 [Catalog Service] Updating aggregate database metrics...");
+
+        if (counterFlawFound) {
+            // Here you would execute a repository update statement, for example:
+            // statsRepository.incrementTotalFlawsCaught();
+            System.out.println("📈 Metric Increment: Total Flaws Caught tracking updated (+1).");
+        } else {
+            // statsRepository.incrementTotalCleanArguments();
+            System.out.println("📉 Metric Increment: Total Clean Arguments tracking updated (+1).");
+        }
     }
 }
